@@ -35,6 +35,11 @@ for code, name in tqdm(zip(df['コード'], df['銘柄名']), total=len(df)):
             if not data.empty:  # データが存在する場合はループを抜ける
                 break
             time.sleep(5)  # 5秒待機してから再試行
+            
+        # 当日のデータがまだない可能性が考えられるので、データが空でかつdays_agoが0の場合、1日前のデータの取得を試みる
+        if data.empty and days_ago == 0:
+            date = datetime.now() - timedelta(days=1)
+            data = yf.download(ticker, start=date,end=date + timedelta(days=1))
 
         # 株価をリストに追加（データがない場合はNaNを追加）
         stock_prices.append(
